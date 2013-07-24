@@ -174,7 +174,7 @@ class PatientCreatePage(webapp2.RequestHandler):
 		sensorid = cgi.escape(self.request.get('sensorID'))
 		notes = cgi.escape(self.request.get('notes'))
 		
-		if re.match(r'^[a-zA-Z0-9._\- ]+$',name) and re.match(r'^[a-zA-Z0-9._\- ]+$',fname) and re.match(r'^[a-zA-Z0-9._\- ]+$',loc) and re.match(r'^[a-zA-Z0-9._\-]+$',gid) and re.match(r'^[a-zA-Z0-9._\-]+$',sensorid) and re.match(r'^[a-zA-Z0-9._\-]*$',notes):
+		if re.match(r'^[a-zA-Z0-9._\- ]+$',name) and re.match(r'^[a-zA-Z0-9._\- ]+$',fname) and re.match(r'^[a-zA-Z0-9._\- ]+$',loc) and re.match(r'^[a-zA-Z0-9._\-]+$',gid) and re.match(r'^[,a-zA-Z0-9._\-]+$',sensorid) and re.match(r'^[a-zA-Z0-9._\-]*$',notes):
 			doc = User.all().filter("userName =",gid).get()
 			if not doc:
 				self.redirect(cgi.escape('/patient/new?error=Doctor not found in the database'))
@@ -191,15 +191,16 @@ class PatientCreatePage(webapp2.RequestHandler):
 			
 			pid = patient.key().id()
 			
-			sensortagmap = SensorPatientMap.all().filter("sensorId =",sensorid).get()
-			if not sensortagmap:
-				newtag = SensorPatientMap()
-				newtag.sensorId = sensorid
-				newtag.patientId = pid
-				newtag.put()
-			else:
-				sensortagmap.patientId = pid
-				sensortagmap.update()
+			for sid in sensorid.split(','):
+				sensortagmap = SensorPatientMap.all().filter("sensorId =",sid).get()
+				if not sensortagmap:
+					newtag = SensorPatientMap()
+					newtag.sensorId = sid
+					newtag.patientId = pid
+					newtag.put()
+				else:
+					sensortagmap.patientId = pid
+					sensortagmap.update()
 			
 			self.redirect(cgi.escape('/?note=Tag mapped to patient successfully'))
 	
