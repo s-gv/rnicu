@@ -29,7 +29,7 @@ import Crypto.Cipher.AES as AES
 from Crypto import Random
 
 sensor_types = r'(temperature|SpO2)' # example: r'(temp|spo|hr)'
-sensor_data_encryption = True
+sensor_data_encryption = False
 key = 'rnicusecretpaswd'
 signature = 'rnicuprojectauthsignature'
 
