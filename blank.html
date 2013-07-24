@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+	<head>
+		<title>RNICU Webapp</title>
+		<link rel="stylesheet" type="text/css" href="/static/css/slimbox2.css">
+	</head>
+	<body>
+		<h1>RNICU Webapp</h1>
+		<p>The Remote Nenoatal Intensive Care Unit (RNICU) Project aims to improve rural infant mortality by monitoring physiological pararemters of neonates remotely and dispatching an ambulance when necessary.</p>
+		<p>If you are a doctor or tag dispenser or administrator, you need to login to your google account before you can access this webapp. <a href="{{ loginURL }}">Click Here</a> to login using your Google account.</p>
+		<p><a href="/patient">Anonymous patient data</a></p>
+	</body>
+</html>
+{% endautoescape %}

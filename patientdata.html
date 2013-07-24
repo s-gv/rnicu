@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+	<head>
+		<title>RNICU Webapp</title>
+	</head>
+	<body>
+		<a href="{{ logoutURL }}" style="float: right; margin: 10px;">Logout</a>
+		<a href="/" style="float: right; margin: 10px;">Home</a>
+		
+		
+		<h1>List of Sensors for this patient</h1>
+		
+		{% for sensor in sensorlist: %}
+			<p>{{ sensor.capitalize() }} Sensor: <a href="/patient/{{ patientId }}/{{ sensor }}">Raw Data</a> <a href="/patient/{{ patientId }}/{{ sensor }}/graph">Graph</a></p>
+		{% endfor %}
+		
+		
+		{% if err: %}
+			<p style="color: red;">Error Message: {{ err }}</p>
+		{% endif %}
+		<p></p>
+	</body>
+</html>
+{% endautoescape %}

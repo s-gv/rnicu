@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+	<head>
+		<title>RNICU Webapp</title>
+	</head>
+	<body>
+		<a href="{{ logoutURL }}" style="float: right; margin: 10px;">Logout</a>
+		<a href="/" style="float: right; margin: 10px;">Home</a>
+		<h1>List of your remote patients</h1>
+		<table border="1">
+			<tr>
+				<th>Patient ID</th><th>Name</th><th>Father's Name</th><th>Location</th><th>Notes</th><th>Sensor ID</th>
+			</tr>
+			{% for patient in patients: %}
+				<tr>
+					<td><a href="/patient/{{ patient.key().id() }}">{{ patient.key().id() }}</a></td><td>{{ patient.patientName }}</td><td>{{ patient.patientFatherName }}</td><td>{{ patient.location }}</td><td>{{ patient.notes }}</td><td>{{ patient.sensorId }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+		
+		
+		{% if err: %}
+			<p style="color: red;">Error Message: {{ err }}</p>
+		{% endif %}
+		<p></p>
+	</body>
+</html>
+{% endautoescape %}

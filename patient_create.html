@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+	<head>
+		<title>RNICU Webapp</title>
+	</head>
+	<body>
+		<a href="{{ logoutURL }}" style="float: right; margin: 10px;">Logout</a>
+		<a href="/" style="float: right; margin: 10px;">Home</a>
+		
+		<h1>Assign Tag to Patient</h1>
+		
+		<form name="input" action="/patient/create" method="post">
+			Patient's Name: <input type="text" name="patientName"><br />
+			Patient's Father's Name: <input type="text" name="patientFatherName"><br />
+			Location: <input type="text" name="location"><br />
+			Doctor's Google ID: <input type="text" name="doctorID"><br />
+			Sensor ID: <input type="text" name="sensorID"><br />
+			Notes: <input type="text" name="notes"><br />
+			
+			<input type="submit" value="Submit"><br />
+		</form> 
+		{% if err: %}
+			<p style="color: red;">Error Message: {{ err }}</p>
+		{% endif %}
+		{% if note: %}
+			<p style="color: blue;">Note: {{ note }}</p>
+		{% endif %}
+	</body>
+</html>
+{% endautoescape %}

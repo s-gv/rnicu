@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+	<head>
+		<title>RNICU Webapp</title>
+	</head>
+	<body>
+		<a href="{{ logoutURL }}" style="float: right; margin: 10px;">Logout</a>
+		<a href="/" style="float: right; margin: 10px;">Home</a>
+		<h1>Anonymous Patient Data</h1>
+		<p>Click to access data in (timestamp,value) pairs</p>
+		<table border="1">
+			<tr>
+				<th>Patient ID</th><th>Location</th>
+			</tr>
+			{% for patient in patients: %}
+				<tr>
+					<td><a href="/patient/{{ patient.key().id() }}">{{ patient.key().id() }}</a></td><td>{{ patient.location }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</body>
+</html>
+{% endautoescape %}

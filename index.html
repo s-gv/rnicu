@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+	<head>
+		<title>RNICU Webapp</title>
+	</head>
+	<body>
+		<a href="{{ logoutURL }}" style="float: right;">Logout</a>
+		<h1>RNICU WebApp</h1>
+		<p>Hello {{ username }} ! </p>
+		<p>
+			{% if isAdminUser: %}
+				<p><a href="/admin">Admin Section</a></p>
+			{% endif %}
+			
+			{% if isDispenser or isAdminUser: %}
+				<p><a href="/patient/new">Assign Tag to Patient</a></p>
+			{% endif %}
+			
+			{% if isDoctor or isAdminUser: %}
+				<p><a href="/doctor/{{ doctorID }}">List all my patients</a></p>
+			{% endif %}
+			
+			<p><a href="/patient">Anonymous patient data</a></p>
+			
+			{% if err: %}
+				<p style="color: red;">Error: {{ err }}</p>
+			{% endif %}
+			
+			{% if note: %}
+				<p style="color: blue;">Note: {{ note }}</p>
+			{% endif %}
+		</p>
+	</body>
+</html>
+{% endautoescape %}
