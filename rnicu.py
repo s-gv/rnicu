@@ -37,6 +37,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'])
 
+''' See this for a visualization of the schema. https://github.com/s-gv/rnicu-webapp/wiki/Database-Schema '''
 class User(db.Model):
 	"""Models the User table"""
 	userName = db.StringProperty()
@@ -59,14 +60,17 @@ class SensorPatientMap(db.Model):
 	patientId = db.IntegerProperty()
 
 class SensorData(db.Model):
-	''' Stores Temperature data for all patients '''
+	''' Stores Sensor data for all patients '''
 	patientId = db.IntegerProperty()
 	time = db.StringProperty()
 	type = db.StringProperty()
 	val = db.StringProperty()
 
 class MainPage(webapp2.RequestHandler):
-
+	''' /
+		This is the main page. If the user is logged in, the dashboard is displayed.
+		Otherwise, a link for anonymous data access is presented
+	'''
 	def get(self):
 		user = users.get_current_user()
 		if user:
@@ -107,6 +111,9 @@ class MainPage(webapp2.RequestHandler):
 			self.response.write(template.render(template_values))
 
 class AdminPage(webapp2.RequestHandler):
+	''' /admin
+		This page allows admins to view the list of doctors,tag dispensers in the system
+	'''
 	def get(self):
 		user = users.get_current_user()
 		err = self.request.get('error')
@@ -127,6 +134,9 @@ class AdminPage(webapp2.RequestHandler):
 			self.redirect(users.create_login_url(self.request.uri))
 
 class UserCreatePage(webapp2.RequestHandler):
+	''' /admin/user/create
+		This page allows admins to add a new doctor/tag dispenser to the system
+	'''
 	def get(self):
 		self.redirect('/')
 	def post(self):
@@ -146,6 +156,9 @@ class UserCreatePage(webapp2.RequestHandler):
 			self.redirect(cgi.escape('/admin?error=ID Invalid'))
 
 class UserDeletePage(webapp2.RequestHandler):
+	''' /admin/user/(.*)/delete
+		Posting to this route removes the specified doctor/tag dispenser from the system
+	'''
 	def post(self,google_id):
 		#self.response.write(google_id)
 		q = User.all().filter("userName =",google_id).get()
@@ -154,6 +167,10 @@ class UserDeletePage(webapp2.RequestHandler):
 		self.redirect('/admin')
 
 class PatientCreatePage(webapp2.RequestHandler):
+	''' /patient/new
+		This page presents a form the tag dispenser can fill up to add a patient to the system
+		and associate sensor tags to that patient
+	'''
 	def get(self):
 		err = self.request.get('error')
 		note = self.request.get('note')
@@ -208,6 +225,9 @@ class PatientCreatePage(webapp2.RequestHandler):
 			self.redirect(cgi.escape('/patient/new?error=Invalid data entered'))
 
 class SensorUpdatePage(webapp2.RequestHandler):
+	''' /sensor/update
+		The gateway POSTs to this page to upload sensor data
+	'''
 	def post(self):
 		sensorid = cgi.escape(self.request.get('sensorid'))
 		sensortype = cgi.escape(self.request.get('sensortype'))
@@ -261,6 +281,9 @@ class SensorUpdatePage(webapp2.RequestHandler):
 
 
 class AnonPatientPage(webapp2.RequestHandler):
+	''' /patient
+		This page lists patients only by patient ID and location for anonymous data access
+	'''
 	def get(self):
 		self.response.headers['Content-Type'] = 'text/html'
 		template_values = {
@@ -271,12 +294,18 @@ class AnonPatientPage(webapp2.RequestHandler):
 		self.response.write(template.render(template_values))
 
 class PatientSensorDataPage(webapp2.RequestHandler):
+	''' /patient/([0-9]+)/'+sensor_types
+		This page displays plaintext CSV sensor data for a given patient and sensor type
+	'''
 	def get(self,patientID,sensor_type):
 		self.response.headers['Content-Type'] = 'text/plain'
 		for i in getDataSeriesForPatient(patientID,sensor_type):
 			self.response.write(str(i.time)+','+str(i.val)+'\n')
 
 class PatientSensorDataGraphPage(webapp2.RequestHandler):
+	''' /patient/([0-9]+)/'+sensor_types+'/graph
+		This page visualizes on a graph sensor data from a specific patient and sensor type
+	'''
 	def get(self,patientID,sensor_type):
 		self.response.headers['Content-Type'] = 'text/html'
 		
@@ -289,6 +318,9 @@ class PatientSensorDataGraphPage(webapp2.RequestHandler):
 		self.response.write(template.render(template_values))
 
 class DoctorPage(webapp2.RequestHandler):
+	''' /doctor/([0-9]+)/
+		This page lists the patients that a doctor is caring for.
+	'''
 	def get(self,doctorID):
 		user = users.get_current_user()
 		if user:
@@ -307,6 +339,9 @@ class DoctorPage(webapp2.RequestHandler):
 			self.redirect('/')
 
 class PatientDataPage(webapp2.RequestHandler):
+	''' /patient/([0-9]+)/
+		This page lists links to pages that'll display sensor data for different sensor types
+	'''
 	def get(self,patientID):
 		self.response.headers['Content-Type'] = 'text/html'
 		template_values = {
