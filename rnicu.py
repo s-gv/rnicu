@@ -178,7 +178,8 @@ class PatientCreatePage(webapp2.RequestHandler):
 		template_values = {
 			'logoutURL': users.create_logout_url('/'),
 			'err':err,
-			'note':note
+			'note':note,
+			'sensorid':self.request.get("sensorid")
 		}
 		template = JINJA_ENVIRONMENT.get_template('patient_create.html')
 		self.response.write(template.render(template_values))
@@ -361,7 +362,7 @@ application = webapp2.WSGIApplication([
 	('/admin/?',AdminPage),
 	('/admin/user/create',UserCreatePage),
 	(r'/admin/user/(.*)/delete',UserDeletePage),
-	('/patient/new',PatientCreatePage),
+	(r'/patient/new/?',PatientCreatePage),
 	('/patient/create',PatientCreatePage),
 	('/sensor/update',SensorUpdatePage),
 	('/patient/?',AnonPatientPage),
