@@ -140,20 +140,23 @@ class UserCreatePage(webapp2.RequestHandler):
 	def get(self):
 		self.redirect('/')
 	def post(self):
-		new_id = cgi.escape(self.request.get('googleid'))
-		new_types = self.request.get_all('type')
-		new_isDoctor = 'doctor' in new_types
-		new_isDispenser = 'dispenser' in new_types
-		
-		if re.match(r'^[a-zA-Z0-9._\-]+$',new_id):
-			new_user = User()
-			new_user.userName = new_id
-			new_user.isDoctor = new_isDoctor
-			new_user.isDispenser = new_isDispenser
-			new_user.put()
-			self.redirect('/admin')
+		if users.get_current_user() and users.is_current_user_admin():
+			new_id = cgi.escape(self.request.get('googleid'))
+			new_types = self.request.get_all('type')
+			new_isDoctor = 'doctor' in new_types
+			new_isDispenser = 'dispenser' in new_types
+			
+			if re.match(r'^[a-zA-Z0-9._\-]+$',new_id):
+				new_user = User()
+				new_user.userName = new_id
+				new_user.isDoctor = new_isDoctor
+				new_user.isDispenser = new_isDispenser
+				new_user.put()
+				self.redirect('/admin')
+			else:
+				self.redirect(cgi.escape('/admin?error=ID Invalid'))
 		else:
-			self.redirect(cgi.escape('/admin?error=ID Invalid'))
+			self.redirect(cgi.escape('/?error=Need to be admin to do that'))
 
 class UserDeletePage(webapp2.RequestHandler):
 	''' /admin/user/(.*)/delete
@@ -161,10 +164,13 @@ class UserDeletePage(webapp2.RequestHandler):
 	'''
 	def post(self,google_id):
 		#self.response.write(google_id)
-		q = User.all().filter("userName =",google_id).get()
-		if q:
-			q.delete()
-		self.redirect('/admin')
+		if users.get_current_user() and users.is_current_user_admin():
+			q = User.all().filter("userName =",google_id).get()
+			if q:
+				q.delete()
+			self.redirect('/admin')
+		else:
+			self.redirect(cgi.escape('/?error=Need to be admin to do that'))
 
 class PatientCreatePage(webapp2.RequestHandler):
 	''' /patient/new
@@ -172,58 +178,74 @@ class PatientCreatePage(webapp2.RequestHandler):
 		and associate sensor tags to that patient
 	'''
 	def get(self):
-		err = self.request.get('error')
-		note = self.request.get('note')
-		self.response.headers['Content-Type'] = 'text/html'
-		template_values = {
-			'logoutURL': users.create_logout_url('/'),
-			'err':err,
-			'note':note,
-			'sensorid':self.request.get("sensorid")
-		}
-		template = JINJA_ENVIRONMENT.get_template('patient_create.html')
-		self.response.write(template.render(template_values))
+		user = users.get_current_user()
+		if user:
+			u = User.all().filter("userName =",user.nickname()).get()
+			if u and u.isDispenser:
+				err = self.request.get('error')
+				note = self.request.get('note')
+				self.response.headers['Content-Type'] = 'text/html'
+				template_values = {
+					'logoutURL': users.create_logout_url('/'),
+					'err':err,
+					'note':note,
+					'sensorid':self.request.get("sensorid")
+				}
+				template = JINJA_ENVIRONMENT.get_template('patient_create.html')
+				self.response.write(template.render(template_values))
+			else:
+				self.redirect(cgi.escape('/?error=Need to be a tag dispenser to do that'))
+		else:
+			self.redirect(users.create_login_url(self.request.uri))
 		
 	def post(self):
-		name = cgi.escape(self.request.get('patientName'))
-		fname = cgi.escape(self.request.get('patientFatherName'))
-		loc = cgi.escape(self.request.get('location'))
-		gid = cgi.escape(self.request.get('doctorID'))
-		sensorid = cgi.escape(self.request.get('sensorID'))
-		notes = cgi.escape(self.request.get('notes'))
-		
-		if re.match(r'^[a-zA-Z0-9._\- ]+$',name) and re.match(r'^[a-zA-Z0-9._\- ]+$',fname) and re.match(r'^[a-zA-Z0-9._\- ]+$',loc) and re.match(r'^[a-zA-Z0-9._\-]+$',gid) and re.match(r'^[,a-zA-Z0-9._\-]+$',sensorid) and re.match(r'^[a-zA-Z0-9._\-]*$',notes):
-			doc = User.all().filter("userName =",gid).get()
-			if not doc:
-				self.redirect(cgi.escape('/patient/new?error=Doctor not found in the database'))
-				return
+		user = users.get_current_user()
+		if user:
+			u = User.all().filter("userName =",user.nickname()).get()
+			if u and u.isDispenser:
+				name = cgi.escape(self.request.get('patientName'))
+				fname = cgi.escape(self.request.get('patientFatherName'))
+				loc = cgi.escape(self.request.get('location'))
+				gid = cgi.escape(self.request.get('doctorID'))
+				sensorid = cgi.escape(self.request.get('sensorID'))
+				notes = cgi.escape(self.request.get('notes'))
+				
+				if re.match(r'^[a-zA-Z0-9._\- ]+$',name) and re.match(r'^[a-zA-Z0-9._\- ]+$',fname) and re.match(r'^[a-zA-Z0-9._\- ]+$',loc) and re.match(r'^[a-zA-Z0-9._\-]+$',gid) and re.match(r'^[,a-zA-Z0-9._\-]+$',sensorid) and re.match(r'^[a-zA-Z0-9._\-]*$',notes):
+					doc = User.all().filter("userName =",gid).get()
+					if not doc:
+						self.redirect(cgi.escape('/patient/new?error=Doctor not found in the database'))
+						return
+					
+					patient = Patient()
+					patient.patientName = name
+					patient.patientFatherName = fname
+					patient.location = loc
+					patient.doctorId = gid
+					patient.notes = notes
+					patient.sensorId = sensorid
+					patient.put()
+					
+					pid = patient.key().id()
+					
+					for sid in sensorid.split(','):
+						sensortagmap = SensorPatientMap.all().filter("sensorId =",sid).get()
+						if not sensortagmap:
+							newtag = SensorPatientMap()
+							newtag.sensorId = sid
+							newtag.patientId = pid
+							newtag.put()
+						else:
+							sensortagmap.patientId = pid
+							sensortagmap.update()
+					
+					self.redirect(cgi.escape('/?note=Tag mapped to patient successfully'))
 			
-			patient = Patient()
-			patient.patientName = name
-			patient.patientFatherName = fname
-			patient.location = loc
-			patient.doctorId = gid
-			patient.notes = notes
-			patient.sensorId = sensorid
-			patient.put()
-			
-			pid = patient.key().id()
-			
-			for sid in sensorid.split(','):
-				sensortagmap = SensorPatientMap.all().filter("sensorId =",sid).get()
-				if not sensortagmap:
-					newtag = SensorPatientMap()
-					newtag.sensorId = sid
-					newtag.patientId = pid
-					newtag.put()
 				else:
-					sensortagmap.patientId = pid
-					sensortagmap.update()
-			
-			self.redirect(cgi.escape('/?note=Tag mapped to patient successfully'))
-	
+					self.redirect(cgi.escape('/patient/new?error=Invalid data entered'))
+			else:
+				self.redirect(cgi.escape('/?error=Need to be a tag dispenser to do that'))
 		else:
-			self.redirect(cgi.escape('/patient/new?error=Invalid data entered'))
+			self.redirect(users.create_login_url(self.request.uri))
 
 class SensorUpdatePage(webapp2.RequestHandler):
 	''' /sensor/update
@@ -325,19 +347,23 @@ class DoctorPage(webapp2.RequestHandler):
 	def get(self,doctorID):
 		user = users.get_current_user()
 		if user:
-			q = User.all().filter("userName =",user.nickname()).get()
-			if q and q.key().id() == int(doctorID):
-				self.response.headers['Content-Type'] = 'text/html'
-				template_values = {
-					'logoutURL': users.create_logout_url('/'),
-					'patients': Patient.all().filter('doctorId =',user.nickname())
-				}
-				template = JINJA_ENVIRONMENT.get_template('patienttable.html')
-				self.response.write(template.render(template_values))
+			u = User.all().filter("userName =",user.nickname()).get()
+			if u and u.isDoctor:
+				q = User.all().filter("userName =",user.nickname()).get()
+				if q and q.key().id() == int(doctorID):
+					self.response.headers['Content-Type'] = 'text/html'
+					template_values = {
+						'logoutURL': users.create_logout_url('/'),
+						'patients': Patient.all().filter('doctorId =',user.nickname())
+					}
+					template = JINJA_ENVIRONMENT.get_template('patienttable.html')
+					self.response.write(template.render(template_values))
+				else:
+					self.redirect('/?error=Access Control Violation')
 			else:
-				self.redirect('/?error=Access Control Violation')
+				self.redirect('/?error=Need to be a doctor to do that')
 		else:
-			self.redirect('/')
+			self.redirect(users.create_login_url(self.request.uri))
 
 class PatientDataPage(webapp2.RequestHandler):
 	''' /patient/([0-9]+)/
