@@ -18,7 +18,7 @@
 				
 				var data = [];
 					{% for i in series: %}
-						data.push([{{ i.time }} - offset, {{ i.val }}]);
+						data.push([{{ i[0] }} - offset, {{ i[1] }}]);
 					{% endfor %}
 				$.plot("#placeholder", [ { data : data , lines: { show: true }, points: { show: true } } ], {
 					xaxis: { mode: "time",   timeformat: "%H:%M:%S  %m/%d/%y" , xlabel:"Datetime" },

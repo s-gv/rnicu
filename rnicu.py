@@ -62,9 +62,10 @@ class SensorPatientMap(db.Model):
 class SensorData(db.Model):
 	''' Stores Sensor data for all patients '''
 	patientId = db.IntegerProperty()
-	time = db.StringProperty()
 	type = db.StringProperty()
-	val = db.StringProperty()
+	ind = db.IntegerProperty() # increased if entity size gets too large and a new entity is created
+	times = db.ListProperty(long)
+	vals = db.ListProperty(float)
 
 class MainPage(webapp2.RequestHandler):
 	''' /
@@ -210,7 +211,7 @@ class PatientCreatePage(webapp2.RequestHandler):
 				sensorid = cgi.escape(self.request.get('sensorID'))
 				notes = cgi.escape(self.request.get('notes'))
 				
-				if re.match(r'^[a-zA-Z0-9._\- ]+$',name) and re.match(r'^[a-zA-Z0-9._\- ]+$',fname) and re.match(r'^[a-zA-Z0-9._\- ]+$',loc) and re.match(r'^[a-zA-Z0-9._\-]+$',gid) and re.match(r'^[,a-zA-Z0-9._\-]+$',sensorid) and re.match(r'^[a-zA-Z0-9._\-]*$',notes):
+				if re.match(r'^[a-zA-Z0-9._\- ]+$',name) and re.match(r'^[a-zA-Z0-9._\- ]+$',fname) and re.match(r'^[a-zA-Z0-9._\- ]+$',loc) and re.match(r'^[a-zA-Z0-9._\-]+$',gid) and re.match(r'^[,a-zA-Z0-9._\-]+$',sensorid) and re.match(r'^[a-z A-Z0-9._\-]*$',notes):
 					doc = User.all().filter("userName =",gid).get()
 					if not doc:
 						self.redirect(cgi.escape('/patient/new?error=Doctor not found in the database'))
@@ -236,7 +237,7 @@ class PatientCreatePage(webapp2.RequestHandler):
 							newtag.put()
 						else:
 							sensortagmap.patientId = pid
-							sensortagmap.update()
+							sensortagmap.put()
 					
 					self.redirect(cgi.escape('/?note=Tag mapped to patient successfully'))
 			
@@ -285,15 +286,38 @@ class SensorUpdatePage(webapp2.RequestHandler):
 			self.response.write('01 Sensor not attached to any known patient')
 			return
 		patientId = q.patientId
-		
 		#attach data to the write sensor data table
 		if re.match(sensor_types,sensortype):
-			d = SensorData()
-			d.patientId = patientId
-			d.time = timestamp
-			d.val = value
-			d.type = sensortype
-			d.put()
+			try:
+				t = long(timestamp)
+				v = float(value)
+			except:
+				self.response.write('05 Failed converting (t,v) to type (long,float)')
+				return
+			
+			e = SensorData.all().filter('patientId =',int(patientId)).filter('type =',str(sensortype)).order('-ind').get()
+			last_ind = -1
+			if e:
+				if len(e.times) < 1000:
+					# append to the time series in this entity	
+					pass
+				else:
+					# create new entity
+					last_ind = e.ind
+					e = SensorData()
+					e.patientId = patientId
+					e.type = sensortype
+					e.ind = last_ind + 1
+			else:
+				# first time !
+				e = SensorData()
+				e.patientId = patientId
+				e.type = sensortype
+				e.ind = 0
+			
+			e.times.append(t)
+			e.vals.append(v)
+			e.put()
 			
 		else:
 			self.response.write('02 Sensor Type not recognized')
@@ -323,7 +347,7 @@ class PatientSensorDataPage(webapp2.RequestHandler):
 	def get(self,patientID,sensor_type):
 		self.response.headers['Content-Type'] = 'text/plain'
 		for i in getDataSeriesForPatient(patientID,sensor_type):
-			self.response.write(str(i.time)+','+str(i.val)+'\n')
+			self.response.write(str(i[0])+','+str(i[1])+'\n')
 
 class PatientSensorDataGraphPage(webapp2.RequestHandler):
 	''' /patient/([0-9]+)/'+sensor_types+'/graph
@@ -381,7 +405,9 @@ class PatientDataPage(webapp2.RequestHandler):
 
 
 def getDataSeriesForPatient(patientID,sensortype):
-	return SensorData.all().filter('patientId =',int(patientID)).filter('type =',str(sensortype)).order('-time')
+	for entity in SensorData.all().filter('patientId =',int(patientID)).filter('type =',str(sensortype)).order('ind'):
+		for (t,val) in zip(entity.times,entity.vals):
+			yield (t,val)
 
 application = webapp2.WSGIApplication([
 	('/', MainPage),

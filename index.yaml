@@ -14,5 +14,11 @@ indexes:
   properties:
   - name: patientId
   - name: type
-  - name: time
+  - name: ind
+
+- kind: SensorData
+  properties:
+  - name: patientId
+  - name: type
+  - name: ind
     direction: desc
