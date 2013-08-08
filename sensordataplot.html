@@ -3,38 +3,48 @@
 <html>
 	<head>
 		<title>RNICU Webapp</title>
-		<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/static/js/flot/excanvas.min.js"></script><![endif]-->
-		<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.min.js"></script>
-		<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.min.js"></script>
-		<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.navigate.min.js"></script>
-		<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.time.min.js"></script>
+		<script src="/static/js/highcharts/jquery.min.js"></script>
+		<script src="/static/js/highcharts/highstock.js"></script>
+		<script src="/static/js/highcharts/exporting.js"></script>
 		<script type="text/javascript">
-			var d = new Date()
-			var n = d.getTimezoneOffset(); // returns offset in minutes
-			var offset = n*60*1000; // offset in milliseconds
 			$(function() {
-				//var d1 = [[0, 3], [4, 8], [8, 5], [9, 13]];
-				//var d2 = [[1373994976000, 23], [1373994977000, 23], [1373994978000, 23], [1373994979000, 23], [1373994980000, 23]] ;
+				var d = new Date()
+				var n = d.getTimezoneOffset(); // returns offset in minutes
+				var offset = n*60*1000; // offset in milliseconds
 				
 				var data = [];
-					{% for i in series: %}
-						data.push([{{ i[0] }} - offset, {{ i[1] }}]);
-					{% endfor %}
-				$.plot("#placeholder", [ { data : data , lines: { show: true }, points: { show: true } } ], {
-					xaxis: { mode: "time",   timeformat: "%H:%M:%S  %m/%d/%y" , xlabel:"Datetime" },
-					yaxis: {  },
-					zoom: { interactive: true },
-					pan: { interactive: true } });
-			});
+				{% for i in series: %}
+					data.push([{{ i[0] }} - offset, {{ i[1] }}]);
+				{% endfor %}
+				// Create the chart
+				$('#container').highcharts('StockChart', {
+				    chart: {
+				    },
+
+				    rangeSelector: {
+					selected: 1
+				    },
+
+				    title: {
+					text: '{{ yName }}'
+				    },
+				    
+				    series: [{
+					name: '{{ yName }}',
+					data: data,
+					type: 'spline',
+					tooltip: {
+						valueDecimals: 2
+					}
+				    }]
+				});
+
+		});
 		</script>
 	</head>
 	<body>
 		<a href="/" style="float: right; margin: 10px;">Home</a>
-		<h1>{{ yName }} Plot</h1>
-		<p>Click and drag to pan and scroll while the cursor is on the graph to zoom</p>
-		<div style="box-sizing: border-box; width: 70%; height: 450px; padding: 20px 15px 15px 15px; margin: 15px auto 30px auto; border: 1px solid #ddd;">
-			<div id="placeholder" style="width: 100%;height: 100%; font-size: 14px; line-height: 1.2em;"></div>
-		</div>
+		<div id="container" style="width:100%; height:100%;"></div>
 	</body>
 </html>
 {% endautoescape %}

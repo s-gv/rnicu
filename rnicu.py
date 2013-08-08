@@ -357,8 +357,7 @@ class PatientSensorDataGraphPage(webapp2.RequestHandler):
 		self.response.headers['Content-Type'] = 'text/html'
 		
 		template_values = {
-			'yName': 'Temperature',
-			'yUnit': 'Fahrenheit',
+			'yName': sensor_type.capitalize(),
 			'series': getDataSeriesForPatient(patientID,sensor_type)
 		}
 		template = JINJA_ENVIRONMENT.get_template('sensordataplot.html')
