@@ -1,10 +1,9 @@
-
 body{
 
-    background-image: url(rbc_logo.jpg);
+	background-image: url(rbc_logo.jpg);
 	background-repeat: no-repeat;
 	background-attachment: fixed;
-    background-position:center;
+	background-position:center;
 	width: 1000px;
 	margin:0 auto;  
 	font-size:120%;
@@ -15,7 +14,7 @@ body{
 
 left {
 
-    position: fixed;
+	position: fixed;
 	top: 0; bottom: 0;
 	width: 15px;
 	background:#000000;
@@ -25,7 +24,7 @@ left {
 
 a:link {
 
-    text-decoration:none;
+	text-decoration:none;
 	color:#2F24FF;
 
 } 
@@ -33,7 +32,7 @@ a:link {
 
 a:visited {
 
-    text-decoration:none;
+	text-decoration:none;
 	color:#2F24FF;
 
 } 
@@ -41,7 +40,7 @@ a:visited {
 
 a:hover {
 
-    color:#ffffff;
+	color:#ffffff;
 	background-color:#2F24FF;
 
 }  
@@ -49,7 +48,7 @@ a:hover {
 
 h1{
 
-    margin-top:7%;
+	margin-top:7%;
 	margin-bottom:5%;
 	color:#2F24FF;
 	font-size:200%;
@@ -59,7 +58,7 @@ h1{
 
 h2,h3{
 
-    margin-top:5%;
+	margin-top:5%;
 	color:#2F24FF;
 	font-size:130%;
 
@@ -68,38 +67,36 @@ h2,h3{
 
 label {
 
-    float: left;
+	float: left;
 	width: 250px;
 	text-align: left;
 	margin-right: 0.5em;
 	white-space: nowrap;
 	overflow: hidden;
-	text-overflow: ellipsis;
-	-o-text-overflow: ellipsis;
 
 }
 
 
 table{
 
-    border-collapse:collapse;
+	border-collapse:collapse;
 	height:80px;
 	width:100%;
-    text-align:center;
+	text-align:center;
 
 }
 
 
 th{
 
-    font-size:100%;
+	font-size:100%;
 
 }
 
 
 td{
 
-    font-family:courier;
+	font-family:courier;
 	font-size:80%;
 
 }
@@ -107,7 +104,7 @@ td{
 
 input[type=submit]{
 
-    border:none;
+	border:none;
 	background-color:#cccccc;
 	font-size:90%;
 
@@ -116,7 +113,7 @@ input[type=submit]{
 
 input[type=submit]:hover{
 
-    background-color:#2F24FF;
+	background-color:#2F24FF;
 	color:#ffffff;
 
 }
