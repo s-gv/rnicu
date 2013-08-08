@@ -16,13 +16,40 @@
 				{% for i in series: %}
 					data.push([{{ i[0] }} - offset, {{ i[1] }}]);
 				{% endfor %}
+
 				// Create the chart
 				$('#container').highcharts('StockChart', {
 				    chart: {
 				    },
-
+					
+					
+					
 				    rangeSelector: {
-					selected: 1
+					selected: 1,
+					buttons: [{
+						type: 'minute',
+						count: 360,
+						text: '6h'
+					}, {
+						type: 'day',
+						count: 1,
+						text: '1d'
+					}, {
+						type: 'week',
+						count: 1,
+						text: '1w'
+					}, {
+						type: 'month',
+						count: 1,
+						text: '1m'
+					}, {
+						type: 'year',
+						count: 1,
+						text: '1y'
+					}, {
+						type: 'all',
+						text: 'All'
+					}]
 				    },
 
 				    title: {
@@ -34,9 +61,11 @@
 					data: data,
 					type: 'spline',
 					tooltip: {
-						valueDecimals: 2
+						valueDecimals: 2,
+						xDateFormat: '%b %e %Y, %a, %I:%M:%S %p'
 					}
 				    }]
+					
 				});
 
 		});
