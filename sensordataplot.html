@@ -11,10 +11,9 @@
 				var d = new Date()
 				var n = d.getTimezoneOffset(); // returns offset in minutes
 				var offset = n*60*1000; // offset in milliseconds
-				
 				var data = [];
 				{% for i in series: %}
-					data.push([{{ i[0] }} - offset, {{ i[1] }}]);
+					data.push([{{ i[0] }} - 2*offset, {{ i[1] }}]);
 				{% endfor %}
 
 				// Create the chart
