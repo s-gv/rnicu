@@ -29,6 +29,11 @@ import Crypto.Cipher.AES as AES
 from Crypto import Random
 
 sensor_types = r'(temperature|SpO2)' # example: r'(temp|spo|hr)'
+
+plot_bands = { # [(from,to,'color','label'),..]
+	'temperature' : [(-100,35,'rgba(68, 170, 213, 0.2)','hypothermia'),(35,37.8,'rgba(0, 255, 0, 0.2)','normal'),(37.8,100,'rgba(255, 0, 0, 0.2)','fever')]
+}
+
 sensor_data_encryption = False
 key = 'rnicusecretpaswd'
 signature = 'rnicuprojectauthsignature'
@@ -355,10 +360,12 @@ class PatientSensorDataGraphPage(webapp2.RequestHandler):
 	'''
 	def get(self,patientID,sensor_type):
 		self.response.headers['Content-Type'] = 'text/html'
-		
+		bands = plot_bands.get(sensor_type,[])
 		template_values = {
 			'yName': sensor_type.capitalize(),
-			'series': getDataSeriesForPatient(patientID,sensor_type)
+			'series': getDataSeriesForPatient(patientID,sensor_type),
+			'ebands' : enumerate(bands),
+			'nbands' : len(bands)
 		}
 		template = JINJA_ENVIRONMENT.get_template('sensordataplot.html')
 		self.response.write(template.render(template_values))

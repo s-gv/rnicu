@@ -63,6 +63,43 @@
 				    title: {
 					text: '{{ yName }}'
 				    },
+					
+					yAxis: {
+						plotBands: [
+							{% for i,band in ebands: %}
+								{
+									from: {{ band[0] }},
+									to: {{ band[1] }},
+									color: '{{ band[2] }}',
+									label: {
+										text: '{{ band[3] }}'
+									}
+								}
+								{% if i < (nbands -1): %}
+									,
+								{% endif %}
+							{% endfor %}
+							/*
+							{
+								from : -50,
+								to: 26.5,
+								color : 'rgba(68, 170, 213, 0.2)',
+								label : {
+									text : 'Hypothermia'
+								}
+							},
+							{
+								from : 26.5,
+								to: 27,
+								color : 'rgba(0, 255, 0, 0.2)',
+								label : {
+									text : 'Normal'
+								}
+							}
+							*/
+						
+						]
+					},
 				    
 				    series: [{
 					name: '{{ yName }}',
