@@ -7,6 +7,15 @@
 		<script src="/static/js/highcharts/highstock.js"></script>
 		<script src="/static/js/highcharts/exporting.js"></script>
 		<script type="text/javascript">
+			window.onload = setupRefresh;
+			function setupRefresh() {
+			  setTimeout("refreshPage();", 30*60*1000); // milliseconds
+			}
+			function refreshPage() {
+			   window.location = location.href;
+			}
+		</script>
+		<script type="text/javascript">
 			$(function() {
 				var d = new Date()
 				var n = d.getTimezoneOffset(); // returns offset in minutes
