@@ -3,6 +3,8 @@
 <html>
 	<head>
 		<title>RNICU Webapp</title>
+		<link rel="stylesheet" type="text/css" href="style.css" />
+		<link rel="stylesheet" type="text/css" href="style_handheld.css" media="handheld" />
 	</head>
 	<body>
 		<a href="{{ logoutURL }}" style="float: right; margin: 10px;">Logout</a>
@@ -11,11 +13,11 @@
 		<h1>Assign Tag to Patient</h1>
 		
 		<form name="input" action="/patient/create" method="post">
-			<label>Patient's Name:</label> <input type="text" name="patientName"><br />
-			<label>Patient's Father's Name:</label> <input type="text" name="patientFatherName"><br />
-			<label>Location:</label> <input type="text" name="location"><br />
-			<label>Doctor's Google ID:</label> <input type="text" name="doctorID"> Example: If xyz@gmail.com is the doctor's gmail ID, then xyz is the google id<br />
-			<label>Sensor ID:</label> <input type="text" name="sensorID" value="{{ sensorid }}"> Comma separate multiple sensor IDs. For example: If you are attaching sensors with ids 123,456 and 789 to the patient, enter 123,456,789<br />
+			<label>Patient's Name:</label> <input type="text" name="patientName"><br /><br />
+			<label>Patient's Father's Name:</label> <input type="text" name="patientFatherName"><br /><br />
+			<label>Location:</label> <input type="text" name="location"><br /><br />
+			<label>Doctor's Google ID:</label> <input type="text" name="doctorID"> <br />Example: If xyz@gmail.com is the doctor's gmail ID, then xyz is the google id<br /><br />
+			<label>Sensor ID:</label> <input type="text" name="sensorID" value="{{ sensorid }}"> <br />Comma separate multiple sensor IDs. For example: If you are attaching sensors with ids 123,456 and 789 to the patient, enter 123,456,789<br /><br />
 			<label>Notes:</label> <input type="text" name="notes"><br /><br /><br />
 			
 			<input type="submit" value="Submit"><br />
