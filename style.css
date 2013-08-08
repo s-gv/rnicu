@@ -1,0 +1,122 @@
+
+body{
+
+    background-image: url(rbc_logo.jpg);
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+    background-position:center;
+	width: 1000px;
+	margin:0 auto;  
+	font-size:120%;
+	font-family:"Calibri";
+
+}
+
+
+left {
+
+    position: fixed;
+	top: 0; bottom: 0;
+	width: 15px;
+	background:#000000;
+
+}
+
+
+a:link {
+
+    text-decoration:none;
+	color:#2F24FF;
+
+} 
+
+
+a:visited {
+
+    text-decoration:none;
+	color:#2F24FF;
+
+} 
+
+
+a:hover {
+
+    color:#ffffff;
+	background-color:#2F24FF;
+
+}  
+
+
+h1{
+
+    margin-top:7%;
+	margin-bottom:5%;
+	color:#2F24FF;
+	font-size:200%;
+
+}
+
+
+h2,h3{
+
+    margin-top:5%;
+	color:#2F24FF;
+	font-size:130%;
+
+}
+
+
+label {
+
+    float: left;
+	width: 250px;
+	text-align: left;
+	margin-right: 0.5em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+
+}
+
+
+table{
+
+    border-collapse:collapse;
+	height:80px;
+	width:100%;
+    text-align:center;
+
+}
+
+
+th{
+
+    font-size:100%;
+
+}
+
+
+td{
+
+    font-family:courier;
+	font-size:80%;
+
+}
+
+
+input[type=submit]{
+
+    border:none;
+	background-color:#cccccc;
+	font-size:90%;
+
+}
+
+
+input[type=submit]:hover{
+
+    background-color:#2F24FF;
+	color:#ffffff;
+
+}
