@@ -404,8 +404,8 @@ class PatientDataPage(webapp2.RequestHandler):
 
 
 def getDataSeriesForPatient(patientID,sensortype):
-	for entity in SensorData.all().filter('patientId =',int(patientID)).filter('type =',str(sensortype)).order('ind'):
-		for (t,val) in zip(entity.times,entity.vals):
+	for entity in SensorData.all().filter('patientId =',int(patientID)).filter('type =',str(sensortype)).order('-ind'):
+		for (t,val) in reversed(zip(entity.times,entity.vals)):
 			yield (t,val)
 
 application = webapp2.WSGIApplication([
