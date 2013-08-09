@@ -11,4 +11,3 @@ Dependencies
 - Python 2.7
 - PyCrypto 2.6 - https://www.dlitz.net/software/pycrypto/
 - Highcharts JS - http://www.highcharts.com/
-- 
