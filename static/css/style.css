@@ -1,6 +1,6 @@
 body{
 
-	background-image: url(rbc_logo.jpg);
+	background-image: url(/static/images/rbc_logo.jpg);
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position:center;
