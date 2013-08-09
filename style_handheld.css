@@ -1,0 +1,43 @@
+body{
+
+  width: 100%;
+	margin:0 auto;  
+
+} 
+
+
+
+label {
+
+	float: left;
+	width: 250px;
+	text-align: left;
+	margin-right: 0.5em;
+	white-space: nowrap;
+	overflow: hidden;
+
+}
+
+
+table{
+
+	border-collapse:collapse;
+	width:100%;
+	text-align:center;
+
+}
+
+
+th{
+
+	font-size:100%;
+
+}
+
+
+td{
+
+	font-family:courier;
+	font-size:80%;
+
+}
