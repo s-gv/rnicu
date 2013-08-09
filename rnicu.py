@@ -362,11 +362,13 @@ class PatientSensorDataGraphPage(webapp2.RequestHandler):
 	def get(self,patientID,sensor_type):
 		self.response.headers['Content-Type'] = 'text/html'
 		bands = plot_bands.get(sensor_type,[])
+		r = re.match(r'(.*)/graph/?',self.request.uri)
 		template_values = {
 			'yName': sensor_type.capitalize(),
 			'series': getDataSeriesForPatient(patientID,sensor_type),
 			'ebands' : enumerate(bands),
-			'nbands' : len(bands)
+			'nbands' : len(bands),
+			'url' : r.group(1)
 		}
 		template = JINJA_ENVIRONMENT.get_template('sensordataplot.html')
 		self.response.write(template.render(template_values))
