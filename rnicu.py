@@ -27,6 +27,7 @@ from google.appengine.api import users
 import re
 import Crypto.Cipher.AES as AES
 from Crypto import Random
+import math
 
 sensor_types = r'(temperature|SpO2)' # example: r'(temp|spo|hr)'
 
@@ -413,7 +414,8 @@ class PatientDataPage(webapp2.RequestHandler):
 def getDataSeriesForPatient(patientID,sensortype):
 	for entity in SensorData.all().filter('patientId =',int(patientID)).filter('type =',str(sensortype)).order('-ind'):
 		for (t,val) in reversed(zip(entity.times,entity.vals)):
-			yield (t,val)
+			if not math.isnan(val):
+				yield (t,val)
 
 application = webapp2.WSGIApplication([
 	('/', MainPage),
