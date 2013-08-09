@@ -60,13 +60,13 @@
 											for(var i = st; i >= 0; i--) {
 												tv = JSON.parse('['+s[i]+']');
 												tv[0] = tv[0] - 2*offset;
-												series.addPoint(tv, true, true);
+												series.addPoint(tv);
 											}
 										}
 									}
 									xmlhttp.open("GET",'{{ url }}',true);
 									xmlhttp.send();
-								}, 10000);
+								}, 1*60*1000);
 							}
 						}
 				    },
