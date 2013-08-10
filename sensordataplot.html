@@ -9,7 +9,7 @@
 		<script type="text/javascript">
 			window.onload = setupRefresh;
 			function setupRefresh() {
-			  setTimeout("refreshPage();", 30*60*1000); // milliseconds
+			  setTimeout("refreshPage();", 5*60*1000); // milliseconds
 			}
 			function refreshPage() {
 			   window.location = location.href;
@@ -21,58 +21,15 @@
 				var n = d.getTimezoneOffset(); // returns offset in minutes
 				var offset = n*60*1000; // offset in milliseconds
 				var data = [];
-				{% set first = True %}
 				var last_t = 0;
 				{% for i in series: %}
-					{% if first: %}
-						{% set first = False %}
-						last_t = {{ i[0] }} - 2*offset
-					{% endif %}
 					data.unshift([{{ i[0] }} - 2*offset, {{ i[1] }}]);
 				{% endfor %}
 				// Create the chart
 				$('#container').highcharts('StockChart', {
 				    chart: {
-						events: {
-							load: function() {
-								var series = this.series[0];
-								setInterval(function() {
-									var x,y;
-									var xmlhttp = new XMLHttpRequest();
-									xmlhttp.onreadystatechange=function()
-									{
-										if (xmlhttp.readyState==4)
-										{
-											var s = xmlhttp.responseText;
-											s = s.split('\n');
-											var st = 0;
-											for (var i = 0; i < s.length; i++) {
-												tv = JSON.parse('['+s[i]+']');
-												tv[0] = tv[0] - 2*offset;
-												if(tv[0] == last_t)
-												{
-													st = i - 1;
-													break;
-												}
-												if(i == 0)
-													last_t = tv[0];
-											}
-											for(var i = st; i >= 0; i--) {
-												tv = JSON.parse('['+s[i]+']');
-												tv[0] = tv[0] - 2*offset;
-												series.addPoint(tv);
-											}
-										}
-									}
-									xmlhttp.open("GET",'{{ url }}',true);
-									xmlhttp.send();
-								}, 1*60*1000);
-							}
-						}
-				    },
-					
-					
-					
+						type: 'spline',
+					},
 				    rangeSelector: {
 					selected: 1,
 					buttons: [{
@@ -105,6 +62,10 @@
 					text: '{{ yName }}'
 				    },
 					
+					xAxis: {
+						ordinal: false
+					},
+					
 					yAxis: {
 						plotBands: [
 							{% for i,band in ebands: %}
@@ -125,9 +86,9 @@
 					},
 				    
 				    series: [{
+					animation: false,
 					name: '{{ yName }}',
 					data: data,
-					type: 'spline',
 					tooltip: {
 						valueDecimals: 2,
 						xDateFormat: '%b %e %Y, %a, %I:%M:%S %p'
