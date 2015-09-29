@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+	<title>sensor-cloud</title>
+</head>
+<body>
+	<h1>sensor-cloud</h1>
+	<p>Enter the tag name to retrieve data. The tag is case sensitive and should be alphanumeric. </p>
+	<p>If the tag you entered does not match any in the database, nothing is returned and you will see an empty page.</p>
+	<form name="input" action="/data" method="get">
+		Tag: <input type="text" name="tag">
+		<input type="submit" name='graph' value="Graph">
+		<input type="submit" value="CSV">
+	</form> 
+
+</body>
+</html>
+{% endautoescape %}

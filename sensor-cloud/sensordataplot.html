@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+        <head>
+                <title>sensor-cloud</title>
+                <script src="/static/js/highcharts/jquery.min.js"></script>
+                <script src="/static/js/highcharts/highstock.js"></script>
+                <script src="/static/js/highcharts/exporting.js"></script>
+                <script type="text/javascript">
+                        window.onload = setupRefresh;
+                        function setupRefresh() {
+                         setTimeout("refreshPage();", 5*60*1000); // milliseconds
+                        }
+                        function refreshPage() {
+                         window.location = location.href;
+                        }
+                </script>
+                <script type="text/javascript">
+                    $(function() {
+                                var multiseries = [{
+                                        animation: false,
+                                        color: 'rgba(255,255,255,0)',
+                                        enableMouseTracking: false,
+                                        data: [
+                                        {% for (t, v) in fullSeries: %}
+                                            [ {{ t }}, {{ v }}],
+                                        {% endfor %}
+                                        ]
+                                }];
+                                {% for series in reliableSeries: %}
+                                    multiseries.push({
+                                        animation: false,
+                                        name: '{{ yName }}',
+                                        data: [ 
+                                            {% for (t, v) in series: %}
+                                                [ {{ t }}, {{ v }}],
+                                            {% endfor %}
+                                        ],
+                                        color: '#7cb5ec',
+                                        marker: {
+                                            enabled: false,
+                                            symbol: 'circle'
+                                        },
+                                        tooltip: {
+                                            valueDecimals: 2,
+                                            xDateFormat: '%b %e %Y, %a, %I:%M:%S %p'
+                                        },
+                                    });
+                                {% endfor %}
+                                {% for series in unreliableSeries: %}
+                                    multiseries.push({
+                                        animation: false,
+                                        name: '{{ yName }}',
+                                        data: [ 
+                                            {% for (t, v) in series: %}
+                                                [ {{ t }}, {{ v }}],
+                                            {% endfor %}
+                                        ],
+                                        color: '#8d4653',// '#f7a35c','#8d4653'
+                                        marker: {
+                                            enabled: false,
+                                            symbol: 'circle'
+                                        },
+                                        tooltip: {
+                                            valueDecimals: 2,
+                                            xDateFormat: '%b %e %Y, %a, %I:%M:%S %p'
+                                        }
+                                    });
+                                {% endfor %}
+
+                                // Create the chart
+                                $('#container').highcharts('StockChart', {
+                                        chart: {
+                                            alignTicks: false
+                                        },
+                                 rangeSelector: {
+                                        selected: 1,
+                                        buttons: [{
+                                                type: 'minute',
+                                                count: 360,
+                                                text: '6h'
+                                        }, {
+                                                type: 'day',
+                                                count: 1,
+                                                text: '1d'
+                                        }, {
+                                                type: 'week',
+                                                count: 1,
+                                                text: '1w'
+                                        }, {
+                                                type: 'month',
+                                                count: 1,
+                                                text: '1m'
+                                        }, {
+                                                type: 'year',
+                                                count: 1,
+                                                text: '1y'
+                                        }, {
+                                                type: 'all',
+                                                text: 'All'
+                                        }]
+                                 },
+
+                                title: {
+                                        text: '{{ yName }}'
+                                 },
+                                        
+                                xAxis: {
+                                        ordinal: false,
+                                },
+                                        
+                                yAxis: {
+
+                                },                
+                                series: multiseries
+                            });
+
+                });
+                </script>
+        </head>
+        <body>
+                <div id="container"></div>
+        </body>
+</html>
+{% endautoescape %}
